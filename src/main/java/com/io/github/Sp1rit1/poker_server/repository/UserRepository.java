@@ -2,11 +2,13 @@ package com.io.github.Sp1rit1.poker_server.repository; // Замените на 
 
 import com.io.github.Sp1rit1.poker_server.entity.User; // Импорт вашей User Entity
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 // import org.springframework.stereotype.Repository; // Можно раскомментировать
 
 import java.util.Optional;
 
-// @Repository // Опционально
+
+@Repository // Опционально
 public interface UserRepository extends JpaRepository<User, Long> { // <Тип Сущности, Тип ID>
 
     /**
