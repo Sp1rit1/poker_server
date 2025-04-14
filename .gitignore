@@ -1,0 +1,92 @@
+# =========================================================================
+# Java / Spring Boot / Maven / IntelliJ IDEA .gitignore
+# =========================================================================
+
+# IDE files (IntelliJ IDEA)
+# =========================
+# User-specific and project-specific settings, caches, etc.
+.idea/
+*.iml
+*.ipr
+*.iws
+# Built output directory for IntelliJ
+out/
+# Rider IDE files
+.idea.shelf/
+
+# IDE files (Eclipse) - optional, for broader compatibility
+# =========================
+.classpath
+.project
+.settings/
+# Eclipse build output folder (sometimes named 'bin')
+# bin/
+
+# IDE files (VSCode) - optional
+# =========================
+.vscode/
+
+# Build Tool files (Maven)
+# =========================
+# Standard output directory for compiled code and packaged artifacts
+target/
+# Maven release plugin files
+pom.xml.tag
+pom.xml.branch
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Build Tool files (Gradle) - optional, keep if you might switch back
+# =========================
+# .gradle/
+# build/
+
+# Compiled sources
+# =========================
+*.class
+
+# Log files
+# =========================
+*.log
+logs/
+
+# Packaged archives
+# =========================
+# Generally, build artifacts shouldn't be committed
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Runtime files
+# =========================
+# Java VM crash logs
+hs_err_pid*
+# Temporary files created by editors like vim
+*~
+*.swp
+
+# OS generated files
+# =========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Other specific files/folders (add as needed)
+# =========================
+# Example: if you have a local config file with secrets
+# local_config.properties
+# /secrets/
