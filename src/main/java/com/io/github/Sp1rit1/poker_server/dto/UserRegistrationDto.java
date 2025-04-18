@@ -17,7 +17,7 @@ public class UserRegistrationDto {
     private String password;
 
     @Email(message = "Email should be valid")
-    @NotBlank // Раскомментируйте, если email обязателен
+    @NotBlank(message = "Email cannot be blank")
 
     private String email;
 }
