@@ -37,9 +37,9 @@ public class UserService {
         User user = userRepository.findByUsername(loginDto.getUsername()) // пытаемся найти пользователя с соответствующим именем
                 // переменная user получает значение типа User, возвращаемое методом orElseThrow(), вызванного у Optional<User>, возвращённого findByUsername, если Optional<User> окажется пустым, то orElseThrow() выбросит исключение
                 .orElseThrow(() -> new RuntimeException("Invalid username or password"));
-        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPasswordHash())) { // если хэши паролей не сошлись, то выбрасываем исключение
+        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPasswordHash())) { // если хеши паролей не сошлись, то выбрасываем исключение
             throw new RuntimeException("Invalid username or password");
         }
-        return new AuthResponseDto(user.getId(), user.getUsername()); // возвращаем объект для передачи данных об аунтефикации
+        return new AuthResponseDto(user.getId(), user.getUsername()); // возвращаем объект для передачи данных об аутентификации
     }
 }
