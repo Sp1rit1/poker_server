@@ -7,34 +7,31 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data // Lombok: getters, setters, toString, equals, hashCode
-@NoArgsConstructor // Lombok: конструктор без аргументов
-@AllArgsConstructor // Lombok: конструктор со всеми аргументами
-@Entity // Указывает, что это JPA сущность
-@Table(name = "users") // Связывает с таблицей "users" в БД
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity // данный класс является сущностью, которая соответствует таблице users из БД
+@Table(name = "users")
 
 public class User {
 
-    @Id // Первичный ключ
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Автогенерация ID базой данных (PostgreSQL)
+    @Id // указывает, что данное поле является первичным ключом
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // указывает стратегию генерации значения ID, в данном случае (IDENTITY) делегирует эту задачу базе данных
     private Long id;
 
-    @Column(nullable = false, unique = true) // Не может быть null, должно быть уникальным
+    @Column(nullable = false, unique = true) // указывает, что данное поле соответствует одноимённому столбцу, не может быть NULL и значения в ней должны быть уникальны
     private String username;
 
-    @Column(nullable = false) // Не может быть null
-    private String passwordHash; // Храним хеш пароля
+    @Column(nullable = false)
+    private String passwordHash;
 
-    @Column(unique = true) // Уникальное (можно сделать nullable = false, если email обязателен)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    // @Column // Раскомментируйте и настройте, когда добавите баланс
-    // private Long balance;
-
-    @Column(nullable = false, updatable = false) // Не null, не обновляется после создания
+    @Column(nullable = false, updatable = false) // значение этого поля не должно включаться в SQL UPDATE запросы, оно устанавливается 1 раз при создании
     private LocalDateTime createdAt;
 
-    @PrePersist // Метод вызывается перед первым сохранением (INSERT)
+    @PrePersist // указывает на то, что метод должен быть вызван перед тем как новая сущность будет впервые сохранена (перед INSERT)
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }

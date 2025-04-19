@@ -9,30 +9,25 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration
-@EnableWebSecurity
+@Configuration // помечаем класс как источник конфигурации бинов
+@EnableWebSecurity // включаем базовую конфигурацию Spring Security
 public class SecurityConfig {
 
-    @Bean // Определяем бин для хеширования паролей
-    public PasswordEncoder passwordEncoder() {
-        // Используем BCrypt - стандартный надежный алгоритм
+    @Bean // аннотация уровня метода, позволяющая методу явно создавать и конфифигурировать бины ( возвращаемый объект будет бином)
+    public PasswordEncoder passwordEncoder() { // определяем бин для шифрования пароля для дальнейшего внедрения в UserService
+        // возвращаем объект кодировщик, который будет хэшировать пароль c помощью BCrypt (крутой алгорит с встроенной "солью" (доп. строка для защиты от радужных таблиц))
         return new BCryptPasswordEncoder();
     }
 
-    @Bean // Определяем цепочку фильтров безопасности для HTTP запросов
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {    // основной бин, конфигурирующий правила безопасности для WEB-запросов
         http
-                // Отключаем CSRF-защиту, т.к. она обычно не нужна для REST API
-                .csrf(AbstractHttpConfigurer::disable)
-                // Настраиваем правила авторизации для запросов
-                .authorizeHttpRequests(authz -> authz
-                        // Разрешаем всем доступ к эндпоинтам /api/auth/** (регистрация, логин)
-                        .requestMatchers("/api/auth/**").permitAll()
-                        // Все остальные запросы требуют аутентификации
-                        .anyRequest().authenticated()
+                .csrf(AbstractHttpConfigurer::disable)  // отключаем защиту от CSRF-атак актуальных только для браузерных приложений
+                .authorizeHttpRequests(authz -> authz // конфигурируем правила авторизации для HTTP-запросов
+                        .requestMatchers("/api/auth/**").permitAll() // запросы, соответствущие указанному шаблону разрешены всем
+                        .anyRequest().authenticated() // любой запрос не соответствующий шаблону требует, чтобы пользователь был аутентифицирован
                 );
-        // В будущем здесь можно будет добавить конфигурацию JWT или других методов аутентификации
 
-        return http.build(); // Собираем и возвращаем настроенную цепочку фильтров
+        return http.build(); // возвращаем полностью сконфигурированный объект SecurityFilterChain
     }
 }

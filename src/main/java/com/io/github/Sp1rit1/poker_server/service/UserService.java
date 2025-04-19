@@ -10,48 +10,36 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // Для транзакций
 
-@Service // Помечаем как сервис Spring
-@RequiredArgsConstructor // Lombok для внедрения зависимостей через конструктор
+@Service // данный класс принадлежит к слою бизнес-логики
+@RequiredArgsConstructor // генерирует конструктор с аргументами, являющимися неинициализированными final полями
 public class UserService {
 
-    private final UserRepository userRepository; // Репозиторий для доступа к данным User
-    private final PasswordEncoder passwordEncoder; // Бин для хеширования паролей
+    // final поля для внедрения зависимостей через конструктор
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Transactional // Операции внутри метода - в одной транзакции
-    public User registerUser(UserRegistrationDto registrationDto) {
-        // 1. Проверка, не занято ли имя пользователя
-        if (userRepository.findByUsername(registrationDto.getUsername()).isPresent()) {
-            // В реальном приложении лучше бросать кастомное исключение
+    @Transactional // указывает Spring обернуть данный метод в транзакцию БД
+    public User registerUser(UserRegistrationDto registrationDto) { // метод регистрации пользователя, принимающий в параметры объект, передающий регистрационные данные
+        if (userRepository.findByUsername(registrationDto.getUsername()).isPresent()) { // проверяем с помощью репозитория есть ли в БД пользователь с таким же именем
             throw new RuntimeException("Username '" + registrationDto.getUsername() + "' already exists");
         }
-        // Опционально: Проверка email, если он уникален и обязателен
 
-        // 2. Создание нового пользователя
-        User newUser = new User();
-        newUser.setUsername(registrationDto.getUsername());
-        // 3. Хеширование пароля перед сохранением
-        newUser.setPasswordHash(passwordEncoder.encode(registrationDto.getPassword()));
-        newUser.setEmail(registrationDto.getEmail());
+        User newUser = new User(); // создаём экземпляр сущности User, соответствующий строке в таблице users в БД
+        newUser.setUsername(registrationDto.getUsername()); // устанавливаем имя пользователя
+        newUser.setPasswordHash(passwordEncoder.encode(registrationDto.getPassword())); // хэшируем и устанавливаем пароль
+        newUser.setEmail(registrationDto.getEmail()); // устанавливаем email
         // createdAt установится автоматически через @PrePersist
-
-        // 4. Сохранение пользователя в БД
-        return userRepository.save(newUser);
+        return userRepository.save(newUser); // сохраняем пользователя в БД с помощью репозитория
     }
 
-    @Transactional(readOnly = true) // Транзакция только для чтения (оптимизация)
-    public AuthResponseDto authenticateUser(LoginRequestDto loginDto) {
-        // 1. Найти пользователя по имени
-        User user = userRepository.findByUsername(loginDto.getUsername())
-                // Если не найден, бросить исключение
+    @Transactional(readOnly = true) // оптимизация "только для чтения"
+    public AuthResponseDto authenticateUser(LoginRequestDto loginDto) { // принимаем в параметры объект, передающий данные для входа
+        User user = userRepository.findByUsername(loginDto.getUsername()) // пытаемся найти пользователя с соответствующим именем
+                // переменная user получает значение типа User, возвращаемое методом orElseThrow(), вызванного у Optional<User>, возвращённого findByUsername, если Optional<User> окажется пустым, то orElseThrow() выбросит исключение
                 .orElseThrow(() -> new RuntimeException("Invalid username or password"));
-
-        // 2. Проверить совпадение пароля (сырой из запроса и хеш из БД)
-        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPasswordHash())) {
-            // Если пароль не совпадает, бросить то же исключение
+        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPasswordHash())) { // если хэши паролей не сошлись, то выбрасываем исключение
             throw new RuntimeException("Invalid username or password");
         }
-
-        // 3. Если все хорошо, вернуть данные для ответа
-        return new AuthResponseDto(user.getId(), user.getUsername());
+        return new AuthResponseDto(user.getId(), user.getUsername()); // возвращаем объект для передачи данных об аунтефикации
     }
 }
