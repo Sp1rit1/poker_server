@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class AuthResponseDto { // класс, объекты которого будут использоваться для передачи данных об аунтефикации между слоями
     private Long userId;
     private String username;
+    private String friendCode;
 }

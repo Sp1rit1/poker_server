@@ -5,7 +5,7 @@
 -- Dumped from database version 17.4
 -- Dumped by pg_dump version 17.4
 
--- Started on 2025-05-05 03:48:18
+-- Started on 2025-05-08 22:12:20
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -58,7 +58,8 @@ CREATE TABLE public.users (
     password_hash character varying(255) NOT NULL,
     email character varying(255),
     created_at timestamp without time zone NOT NULL,
-    friend_code character varying(10)
+    friend_code character varying(10),
+    balance numeric(10,2) DEFAULT 1000 NOT NULL
 );
 
 
@@ -76,7 +77,7 @@ CREATE SEQUENCE public.users_id_seq
 
 
 --
--- TOC entry 4876 (class 0 OID 0)
+-- TOC entry 4877 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -93,7 +94,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 
 --
--- TOC entry 4720 (class 2606 OID 16426)
+-- TOC entry 4721 (class 2606 OID 16426)
 -- Name: user_friends user_friends_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -102,7 +103,7 @@ ALTER TABLE ONLY public.user_friends
 
 
 --
--- TOC entry 4722 (class 2606 OID 16445)
+-- TOC entry 4723 (class 2606 OID 16445)
 -- Name: user_stats user_stats_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -111,7 +112,7 @@ ALTER TABLE ONLY public.user_stats
 
 
 --
--- TOC entry 4712 (class 2606 OID 16416)
+-- TOC entry 4713 (class 2606 OID 16416)
 -- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -120,7 +121,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 4714 (class 2606 OID 16418)
+-- TOC entry 4715 (class 2606 OID 16418)
 -- Name: users users_friend_code_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -129,7 +130,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 4716 (class 2606 OID 16412)
+-- TOC entry 4717 (class 2606 OID 16412)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -138,7 +139,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 4718 (class 2606 OID 16414)
+-- TOC entry 4719 (class 2606 OID 16414)
 -- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -147,7 +148,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 4723 (class 2606 OID 16427)
+-- TOC entry 4724 (class 2606 OID 16427)
 -- Name: user_friends user_friends_user_id1_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -156,7 +157,7 @@ ALTER TABLE ONLY public.user_friends
 
 
 --
--- TOC entry 4724 (class 2606 OID 16432)
+-- TOC entry 4725 (class 2606 OID 16432)
 -- Name: user_friends user_friends_user_id2_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -165,7 +166,7 @@ ALTER TABLE ONLY public.user_friends
 
 
 --
--- TOC entry 4725 (class 2606 OID 16446)
+-- TOC entry 4726 (class 2606 OID 16446)
 -- Name: user_stats user_stats_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -173,7 +174,7 @@ ALTER TABLE ONLY public.user_stats
     ADD CONSTRAINT user_stats_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
--- Completed on 2025-05-05 03:48:18
+-- Completed on 2025-05-08 22:12:20
 
 --
 -- PostgreSQL database dump complete
