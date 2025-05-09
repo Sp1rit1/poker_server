@@ -29,6 +29,15 @@ public class UserStats {
 
     private LocalDateTime lastUpdated;
 
+    public UserStats(User user) {
+        this.user = user;               // Устанавливаем связь с User
+        this.userId = user.getId();     // Устанавливаем userId из переданного User
+        // Здесь можно инициализировать другие поля статистики значениями по умолчанию,
+        // если они не инициализируются при объявлении поля (как handsPlayed = 0)
+        // Например, this.totalWinnings = BigDecimal.ZERO;
+        this.lastUpdated = LocalDateTime.now(); // Можно установить время создания/обновления
+    }
+
     @PrePersist
     @PreUpdate
     protected void onUpdate() {
