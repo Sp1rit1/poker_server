@@ -1,33 +1,52 @@
 package com.io.github.Sp1rit1.poker_server.config;
 
+import com.io.github.Sp1rit1.poker_server.service.MyUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer; // Для disable CSRF
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.password.PasswordEncoder; // Убедитесь, что ваш PasswordEncoder bean есть (он есть)
 import org.springframework.security.web.SecurityFilterChain;
+// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // Не нужен здесь, если PasswordEncoder bean уже есть
 
-@Configuration // помечаем класс как источник конфигурации бинов
-@EnableWebSecurity // включаем базовую конфигурацию Spring Security
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Bean // аннотация уровня метода, позволяющая методу явно создавать и конфифигурировать бины ( возвращаемый объект будет бином)
-    public PasswordEncoder passwordEncoder() { // определяем бин для шифрования пароля для дальнейшего внедрения в UserService
-        // возвращаем объект кодировщик, который будет хэшировать пароль c помощью BCrypt (крутой алгорит с встроенной "солью" (доп. строка для защиты от радужных таблиц))
-        return new BCryptPasswordEncoder();
+    private final MyUserDetailsService myUserDetailsService;
+    // PasswordEncoder будет автоматически внедрен в authenticationManager через passwordEncoder() бин ниже
+    // private final PasswordEncoder passwordEncoder; // Можно убрать, если не используется напрямую здесь
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder(); // Явно указал класс, чтобы не было путаницы
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {    // основной бин, конфигурирующий правила безопасности для WEB-запросов
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)  // отключаем защиту от CSRF-атак актуальных только для браузерных приложений
-                .authorizeHttpRequests(authz -> authz // конфигурируем правила авторизации для HTTP-запросов
-                        .requestMatchers("/api/auth/**").permitAll() // запросы, соответствущие указанному шаблону разрешены всем
-                        .anyRequest().authenticated() // любой запрос не соответствующий шаблону требует, чтобы пользователь был аутентифицирован
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/friends/**").authenticated()
+                        .anyRequest().authenticated()
                 );
 
-        return http.build(); // возвращаем полностью сконфигурированный объект SecurityFilterChain
+        return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder
+                .userDetailsService(myUserDetailsService)
+                .passwordEncoder(passwordEncoder()); // Используем бин passwordEncoder()
+        return authenticationManagerBuilder.build();
     }
 }

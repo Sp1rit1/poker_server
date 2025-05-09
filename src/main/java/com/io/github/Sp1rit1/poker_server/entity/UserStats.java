@@ -34,11 +34,4 @@ public class UserStats {
     protected void onUpdate() {
         lastUpdated = LocalDateTime.now();
     }
-
-    // Конструктор для создания статистики для нового пользователя
-    public UserStats(User user) {
-        this.user = user;
-        this.userId = user.getId();
-        // Инициализация других полей при необходимости
-    }
 }

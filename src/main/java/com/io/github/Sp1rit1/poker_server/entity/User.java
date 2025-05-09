@@ -32,7 +32,7 @@ public class User {
     @Column(precision = 10, scale = 2)
     private BigDecimal balance; // Баланс игрока
 
-    @Column(unique = true, length = 10) // Код дружбы, уникальный, длина 10
+    @Column(unique = true, length = 6) // Код дружбы, уникальный, длина 6
     private String friendCode;
 
     @Column(nullable = false, updatable = false) // значение этого поля не должно включаться в SQL UPDATE запросы, оно устанавливается 1 раз при создании
