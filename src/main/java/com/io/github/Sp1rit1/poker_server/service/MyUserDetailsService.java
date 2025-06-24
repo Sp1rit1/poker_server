@@ -27,15 +27,7 @@ public class MyUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-        // Если у вас есть система ролей, здесь вы бы их загрузили и преобразовали в GrantedAuthority
-        // Пример с пустым списком прав (если роли не используются):
         Collection<? extends GrantedAuthority> authorities = Collections.emptyList();
-
-        /* Пример, если бы у User entity был список ролей (List<Role> roles):
-        Collection<? extends GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().toUpperCase())) // Префикс ROLE_ - стандарт
-                .collect(Collectors.toList());
-        */
 
         // Создаем и возвращаем CustomUserDetails
         return new CustomUserDetails(

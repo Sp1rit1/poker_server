@@ -60,13 +60,9 @@ class UserServiceTest {
                 .thenReturn(Optional.of(new User())) // Первый раз "находим" код, чтобы проверить цикл
                 .thenReturn(Optional.empty());       // Второй раз не находим, код уникален
 
-        // Мокируем userRepository.save() чтобы он возвращал переданного юзера (с ID, если бы он присваивался)
-        // Для простоты просто проверим, что объект User был передан в save
-        // Для более точного теста можно использовать ArgumentCaptor
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
             User userToSave = invocation.getArgument(0);
-            // В реальной БД ID был бы сгенерирован. Для мока мы можем его установить или просто вернуть объект.
-            // userToSave.setId(1L); // Если бы мы хотели симулировать генерацию ID
+
             return userToSave;
         });
 
@@ -188,15 +184,12 @@ class UserServiceTest {
 
     @Test
     void generateUniqueFriendCode_shouldRetryUntilUniqueOrMaxAttempts() {
-        // Этот тест больше для внутренней функции, но можно проверить логику косвенно.
         // Arrange
         when(userRepository.findByFriendCode(anyString()))
                 .thenReturn(Optional.of(new User())) // 1st collision
                 .thenReturn(Optional.of(new User())) // 2nd collision
                 .thenReturn(Optional.empty());       // 3rd is unique
 
-        // Т.к. generateUniqueFriendCode приватный, мы не можем его вызвать напрямую.
-        // Мы проверим количество вызовов findByFriendCode при регистрации.
         when(passwordEncoder.encode(anyString())).thenReturn("hashedPassword");
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
@@ -225,8 +218,6 @@ class UserServiceTest {
             userService.registerUser(registrationDto);
         });
         assertTrue(exception.getMessage().startsWith("Failed to generate a unique friend code after"));
-        // Проверяем, что было сделано ровно maxAttempts вызовов + 1 (начальный) перед исключением
-        // В вашей реализации это будет ровно maxAttempts, так как проверка идет после генерации
         verify(userRepository, times(20)).findByFriendCode(anyString()); // 20 - это maxAttempts в вашем коде
         verify(userRepository, never()).save(any(User.class)); // Сохранение не должно произойти
     }
@@ -261,8 +252,6 @@ class UserServiceTest {
         // Проверяем UserStats
         UserStats capturedUserStats = capturedUser.getUserStats();
         assertNotNull(capturedUserStats, "Captured user stats should not be null");
-        // ID у UserStats будет null до фактического сохранения User,
-        // но связь User -> UserStats и UserStats -> User должна быть установлена
         assertEquals(capturedUser, capturedUserStats.getUser(), "UserStats should correctly reference its User");
         // assertEquals(0, capturedUserStats.getHandsPlayed()); // Проверка начальных значений, если они есть
     }

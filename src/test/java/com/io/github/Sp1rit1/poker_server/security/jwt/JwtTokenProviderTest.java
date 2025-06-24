@@ -1,21 +1,16 @@
 package com.io.github.Sp1rit1.poker_server.security.jwt;
 
 import com.io.github.Sp1rit1.poker_server.security.CustomUserDetails;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito; // Для Mockito.spy, если понадобится
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.test.util.ReflectionTestUtils; // Для установки приватных полей
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

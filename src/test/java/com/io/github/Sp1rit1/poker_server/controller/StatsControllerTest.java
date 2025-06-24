@@ -48,31 +48,25 @@ class StatsControllerTest {
             return Mockito.mock(StatsService.class);
         }
 
-        @Bean // Мокируем UserDetailsService, так как он требуется SecurityConfig
+        @Bean
         public MyUserDetailsService myUserDetailsService() {
             return Mockito.mock(MyUserDetailsService.class);
         }
 
-        @Bean // Мокируем JwtTokenProvider, так как он может требоваться SecurityConfig
+        @Bean
         public JwtTokenProvider jwtTokenProvider() {
             return Mockito.mock(JwtTokenProvider.class);
         }
-        // AuthenticationManager обычно предоставляется Spring Security,
-        // если он не объявлен как @Bean в SecurityConfig, то Spring его сам настроит
-        // или если он вам нужен как мок для других тестов, можно добавить @Bean AuthenticationManager.
+
     }
 
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired // Теперь Spring внедрит мок StatsService из TestConfig
+    @Autowired
     private StatsService statsService;
 
-    // ObjectMapper может быть @Autowired, если он вам нужен для создания JSON тел запросов вручную,
-    // но для простых GET и проверки JSON ответов он часто не нужен явно в полях теста.
-    // @Autowired
-    // private ObjectMapper objectMapper;
 
     private UserStatsDto userStatsDto;
     private CustomUserDetails userDetails;

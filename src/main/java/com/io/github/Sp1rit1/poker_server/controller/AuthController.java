@@ -41,11 +41,7 @@ public class AuthController {
         // 2. Аутентифицируем пользователя через AuthenticationManager
         Authentication authentication = authenticationManager.authenticate(authTokenForManager);
 
-        // 3. Если аутентификация прошла успешно, AuthenticationManager поместит
-        //    объект Authentication в SecurityContextHolder для ТЕКУЩЕГО запроса.
-        //    Нам не нужно делать это вручную здесь (SecurityContextHolder.getContext().setAuthentication(authentication);),
-        //    так как это уже сделано AuthenticationManager'ом в случае успеха.
-        //    Для STATELESS подхода с JWT, этот контекст в Holder будет жить только на время этого запроса.
+
 
         // 4. Генерируем JWT токен на основе успешной аутентификации
         String jwt = tokenProvider.generateToken(authentication);

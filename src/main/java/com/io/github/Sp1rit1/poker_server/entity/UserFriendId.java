@@ -19,7 +19,6 @@ public class UserFriendId implements Serializable {
     private Long userId1;
     private Long userId2;
 
-    // Важно переопределить equals() и hashCode() для составных ключей
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

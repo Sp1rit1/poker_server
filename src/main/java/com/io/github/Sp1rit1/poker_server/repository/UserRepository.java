@@ -7,14 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 
-@Repository // Опционально, спринг сам определяет репозитории, наследуемые от JPARepository
-public interface UserRepository extends JpaRepository<User, Long> { // интерфейс для работы с таблицой users посредством сущности User
-    // наследуясь от JPARepository получаем все базовые методы (CRUD-операции, save(), findAll() и др.)
-    Optional<User> findByUsername(String username); // производный метод запроса (Spring Data JPA парсит имя метода и создаёт соответствующий JPQL (или SQL) запрос
-    // Optional - класс-контейнер, содеражащий либо объект User, либо пуст
-    Optional<User> findByEmail(String email); // Если email уникален и используется для поиска
-    // Новый метод для поиска пользователя по коду дружбы
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUsername(String username);
+    Optional<User> findByEmail(String email);
     Optional<User> findByFriendCode(String friendCode);
 }
-
-// не нужно создавать класс, реализующий интерфейс UserRepository, потому что Spring Data JPA делает это автоматически во время запуска приложения.

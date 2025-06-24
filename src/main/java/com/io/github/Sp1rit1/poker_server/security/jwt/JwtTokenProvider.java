@@ -31,11 +31,6 @@ public class JwtTokenProvider {
 
     @PostConstruct
     protected void init() {
-        // Генерируем безопасный ключ на основе секрета из properties.
-        // Для продакшена секрет должен быть достаточно сложным и длинным.
-        // Если jwtSecretString достаточно длинный и безопасный, можно использовать его напрямую:
-        // this.jwtSecretKey = Keys.hmacShaKeyFor(jwtSecretString.getBytes(StandardCharsets.UTF_8));
-        // Для простоты примера, если строка короткая, лучше сгенерировать ключ:
         if (jwtSecretString == null || jwtSecretString.length() < 32) { // 32 байта = 256 бит
             logger.warn("JWT secret is not configured or too short in application.properties. Generating a temporary key. THIS IS NOT SECURE FOR PRODUCTION.");
             this.jwtSecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Генерирует случайный ключ HS256

@@ -33,7 +33,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -42,8 +42,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals; // Для ArgumentCaptor
-import static org.junit.jupiter.api.Assertions.assertNotNull; // Для ArgumentCaptor
+
 
 @WebMvcTest(FriendController.class)
 @Import({SecurityConfig.class, FriendControllerTest.TestConfig.class})
@@ -61,13 +60,7 @@ class FriendControllerTest {
         @Bean
         public JwtTokenProvider jwtTokenProvider() { return Mockito.mock(JwtTokenProvider.class); }
 
-        // Мокируем репозитории, которые использует РЕАЛЬНЫЙ FriendService, если бы мы его не мокировали полностью.
-        // Но так как мы мокируем сам FriendService, эти моки здесь не нужны для FriendControllerTest,
-        // они были бы нужны для FriendServiceTest. Оставим для примера, если FriendService не мокируется целиком.
-        // @Bean
-        // public UserRepository userRepository() { return Mockito.mock(UserRepository.class); }
-        // @Bean
-        // public UserFriendRepository userFriendRepository() { return Mockito.mock(UserFriendRepository.class); }
+
     }
 
     @Autowired
@@ -76,13 +69,7 @@ class FriendControllerTest {
     @Autowired // Теперь это мок, предоставленный TestConfig
     private FriendService friendService;
 
-    // Моки репозиториев, если бы мы тестировали реальный FriendService через контроллер,
-    // и FriendService не был бы моком. Сейчас они не используются напрямую в ассертах,
-    // так как мы мокируем поведение самого friendService.
-    // @Autowired
-    // private UserRepository userRepository;
-    // @Autowired
-    // private UserFriendRepository userFriendRepository;
+
 
 
     @Autowired
@@ -108,8 +95,6 @@ class FriendControllerTest {
         friendCodeRequestDto = new FriendCodeRequestDto();
         friendCodeRequestDto.setFriendCode(friendCodeToAdd);
 
-        // Сбрасываем мок friendService перед каждым тестом, если он @Autowired из TestConfig
-        // Это гарантирует, что настройки given() из одного теста не повлияют на другой.
         Mockito.reset(friendService);
     }
 

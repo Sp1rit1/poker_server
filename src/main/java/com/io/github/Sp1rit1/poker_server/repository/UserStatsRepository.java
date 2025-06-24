@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserStatsRepository extends JpaRepository<UserStats, Long> {
-    // Long здесь это тип userId, который является первичным ключом для UserStats
+
 }

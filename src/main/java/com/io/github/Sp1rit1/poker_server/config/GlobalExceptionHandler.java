@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@ControllerAdvice // Помечает класс как глобальный обработчик исключений для контроллеров
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
     // Опционально, но рекомендуется: добавьте логгер
@@ -66,17 +66,11 @@ public class GlobalExceptionHandler {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now().toString());
 
-        // Определяем HTTP статус в зависимости от типа вашего исключения или сообщения
-        // Для простоты, сейчас все RuntimeException будут 400 или 500.
-        // В реальном приложении вы бы создали свои кастомные исключения и маппили их на разные статусы.
+
         HttpStatus status = HttpStatus.BAD_REQUEST; // По умолчанию для бизнес-логики ошибок, которые являются виной клиента
         String errorType = "Bad Request";
 
-        // Пример: если это ошибка, которую вы не ожидали (не бизнес-логика)
-        // if (!(ex instanceof YourBusinessLogicException)) { // Замените YourBusinessLogicException на ваш базовый класс бизнес-исключений
-        //     status = HttpStatus.INTERNAL_SERVER_ERROR;
-        //     errorType = "Internal Server Error";
-        // }
+
 
         body.put("status", status.value());
         body.put("error", errorType);

@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.NoSuchElementException; // Используем это исключение, так как оно выбрасывается из вашего сервиса
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,13 +42,11 @@ class StatsServiceTest {
         testUser = new User();
         testUser.setId(testUserId);
         testUser.setUsername(testUsername);
-        // Другие поля User можно установить, если они влияют на конструктор UserStats
 
-        existingUserStats = new UserStats(testUser); // Используем конструктор, который связывает User
+        existingUserStats = new UserStats(testUser);
         existingUserStats.setHandsPlayed(10);
         existingUserStats.setHandsWon(5);
-        // lastUpdated будет установлено автоматически через @PrePersist/@PreUpdate,
-        // но в моке save() это не сработает, поэтому для тестов можно его не проверять или установить явно.
+
     }
 
     // --- Тесты для getPlayerStats ---
@@ -78,8 +75,6 @@ class StatsServiceTest {
         when(userStatsRepository.findById(testUserId)).thenReturn(Optional.empty()); // Статистики нет
         when(userRepository.findById(testUserId)).thenReturn(Optional.of(testUser));    // Пользователь есть
 
-        // Мокируем save, чтобы он вернул тот объект, который ему передали (для проверки)
-        // Это важно, так как getOrCreateUserStats сохраняет новые статсы
         ArgumentCaptor<UserStats> statsCaptor = ArgumentCaptor.forClass(UserStats.class);
         when(userStatsRepository.save(statsCaptor.capture())).thenAnswer(invocation -> statsCaptor.getValue());
 
