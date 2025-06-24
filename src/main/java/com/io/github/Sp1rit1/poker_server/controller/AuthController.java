@@ -1,22 +1,18 @@
 package com.io.github.Sp1rit1.poker_server.controller;
 
+import com.io.github.Sp1rit1.poker_server.security.CustomUserDetails; // Убедитесь, что этот импорт корректен
 import com.io.github.Sp1rit1.poker_server.dto.AuthResponseDto;
 import com.io.github.Sp1rit1.poker_server.dto.LoginRequestDto;
 import com.io.github.Sp1rit1.poker_server.dto.UserRegistrationDto;
+import com.io.github.Sp1rit1.poker_server.entity.User;
+import com.io.github.Sp1rit1.poker_server.security.jwt.JwtTokenProvider; // <-- НОВЫЙ ИМПОРТ
 import com.io.github.Sp1rit1.poker_server.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException; // Оставляем для специфичной обработки
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import com.io.github.Sp1rit1.poker_server.config.CustomUserDetails; // Убедитесь, что импорт правильный
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,43 +20,45 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    private final UserService userService;
+    private final JwtTokenProvider tokenProvider; // <-- ВНЕДРЯЕМ JwtTokenProvider
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDto registrationDto) {
-        // try-catch для RuntimeException теперь не нужен, его обработает GlobalExceptionHandler
-        userService.registerUser(registrationDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully!");
-        // Если userService.registerUser бросит RuntimeException (например, "Username already exists"),
-        // GlobalExceptionHandler его перехватит и вернет 400 Bad Request с сообщением.
+        User registeredUser = userService.registerUser(registrationDto);
+        return ResponseEntity.status(201).body(java.util.Map.of("message", "User registered successfully! Please log in."));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestDto loginDto, HttpServletRequest request) {
-        try {
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    loginDto.getUsername(),
-                    loginDto.getPassword()
-            );
-            Authentication authentication = authenticationManager.authenticate(authToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestDto loginRequestDto) {
+        // 1. Создаем Authentication токен из запроса для AuthenticationManager
+        UsernamePasswordAuthenticationToken authTokenForManager = new UsernamePasswordAuthenticationToken(
+                loginRequestDto.getUsername(),
+                loginRequestDto.getPassword()
+        );
 
-            HttpSession session = request.getSession(true);
-            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+        // 2. Аутентифицируем пользователя через AuthenticationManager
+        Authentication authentication = authenticationManager.authenticate(authTokenForManager);
 
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            AuthResponseDto authResponse = new AuthResponseDto(
-                    userDetails.getId(),
-                    userDetails.getUsername(),
-                    userDetails.getFriendCode()
-            );
-            return ResponseEntity.ok(authResponse);
-        } catch (AuthenticationException e) {
-            // Оставляем try-catch для AuthenticationException, чтобы вернуть специфичный статус 401
-            // и кастомное сообщение (или можно и его перенести в GlobalExceptionHandler).
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-        }
-        // try-catch для общего RuntimeException теперь не нужен
+        // 3. Если аутентификация прошла успешно, AuthenticationManager поместит
+        //    объект Authentication в SecurityContextHolder для ТЕКУЩЕГО запроса.
+        //    Нам не нужно делать это вручную здесь (SecurityContextHolder.getContext().setAuthentication(authentication);),
+        //    так как это уже сделано AuthenticationManager'ом в случае успеха.
+        //    Для STATELESS подхода с JWT, этот контекст в Holder будет жить только на время этого запроса.
+
+        // 4. Генерируем JWT токен на основе успешной аутентификации
+        String jwt = tokenProvider.generateToken(authentication);
+
+        // 5. Получаем детали пользователя для ответа
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        // 6. Возвращаем токен и информацию о пользователе клиенту
+        return ResponseEntity.ok(new AuthResponseDto(
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getFriendCode(),
+                jwt // <-- ПЕРЕДАЕМ JWT В DTO
+        ));
     }
 }

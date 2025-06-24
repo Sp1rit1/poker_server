@@ -7,6 +7,8 @@ import com.io.github.Sp1rit1.poker_server.repository.UserStatsRepository; // И�
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.io.github.Sp1rit1.poker_server.dto.UserStatsDto; // <--- ДОБАВЬТЕ ЭТОТ ИМПОРТ
+import com.io.github.Sp1rit1.poker_server.entity.UserStats;  // Убедитесь, что он уже есть
 
 import java.math.BigDecimal; // Если будете использовать для выигрышей
 
@@ -71,32 +73,18 @@ public class StatsService {
         // System.out.println("User " + userId + " hands won: " + stats.getHandsWon()); // Для отладки
     }
 
-    /**
-     * (Пример) Добавляет сумму к общему выигрышу пользователя.
-     * Раскомментируйте и адаптируйте, если вам нужен такой функционал.
-     * Убедитесь, что поле totalWinnings существует в UserStats и имеет тип BigDecimal.
-     *
-     * @param userId ID пользователя.
-     * @param amount Сумма выигрыша.
-     */
-    /*
-    @Transactional
-    public void addWinnings(Long userId, BigDecimal amount) {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            // Не добавляем нулевые или отрицательные выигрыши, или обрабатываем по-другому
-            return;
-        }
-        UserStats stats = getOrCreateUserStats(userId);
-        if (stats.getTotalWinnings() == null) { // На случай если поле может быть null
-            stats.setTotalWinnings(BigDecimal.ZERO);
-        }
-        stats.setTotalWinnings(stats.getTotalWinnings().add(amount));
-        userStatsRepository.save(stats);
-    }
-    */
+    @Transactional(readOnly = true)
+    public UserStatsDto getPlayerStats(Long userId) {
+        UserStats stats = getOrCreateUserStats(userId); // Используем ваш существующий метод
 
-    // Вы можете добавить здесь другие методы для обновления различных статистических показателей:
-    // - Количество сделанных фолдов, чеков, коллов, бетов, рейзов
-    // - Самый большой выигранный банк
-    // - И т.д.
+        // Создаем и возвращаем DTO
+        UserStatsDto statsDto = new UserStatsDto();
+        statsDto.setUserId(stats.getUserId());
+        statsDto.setHandsPlayed(stats.getHandsPlayed());
+        statsDto.setHandsWon(stats.getHandsWon());
+        // Установите здесь другие поля DTO из сущности stats, если вы их добавили
+        // например, statsDto.setTotalWinnings(stats.getTotalWinnings());
+
+        return statsDto;
+    }
 }

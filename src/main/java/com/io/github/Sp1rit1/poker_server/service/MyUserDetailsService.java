@@ -2,10 +2,9 @@ package com.io.github.Sp1rit1.poker_server.service;
 
 import com.io.github.Sp1rit1.poker_server.entity.User;
 import com.io.github.Sp1rit1.poker_server.repository.UserRepository;
-import com.io.github.Sp1rit1.poker_server.config.CustomUserDetails; // Импортируем наш новый класс
+import com.io.github.Sp1rit1.poker_server.security.CustomUserDetails; // Импортируем наш новый класс
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

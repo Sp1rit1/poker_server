@@ -1,4 +1,4 @@
-package com.io.github.Sp1rit1.poker_server.config;
+package com.io.github.Sp1rit1.poker_server.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data; // Добавляем аннотацию Lombok

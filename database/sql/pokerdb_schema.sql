@@ -5,7 +5,7 @@
 -- Dumped from database version 17.4
 -- Dumped by pg_dump version 17.4
 
--- Started on 2025-05-08 22:12:20
+-- Started on 2025-05-26 16:53:33
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -58,7 +58,7 @@ CREATE TABLE public.users (
     password_hash character varying(255) NOT NULL,
     email character varying(255),
     created_at timestamp without time zone NOT NULL,
-    friend_code character varying(10),
+    friend_code character varying(6),
     balance numeric(10,2) DEFAULT 1000 NOT NULL
 );
 
@@ -121,7 +121,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 4715 (class 2606 OID 16418)
+-- TOC entry 4715 (class 2606 OID 16461)
 -- Name: users users_friend_code_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -174,7 +174,7 @@ ALTER TABLE ONLY public.user_stats
     ADD CONSTRAINT user_stats_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
--- Completed on 2025-05-08 22:12:20
+-- Completed on 2025-05-26 16:53:33
 
 --
 -- PostgreSQL database dump complete
